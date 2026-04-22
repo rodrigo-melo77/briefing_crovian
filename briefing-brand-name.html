@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing Estratégico · Crovian</title>
+<style>
+:root {
+  --bg:       #060608;
+  --bg2:      #0C0C10;
+  --card:     #0F0F14;
+  --card2:    #131318;
+  --border:   rgba(255,255,255,0.07);
+  --border-h: rgba(255,255,255,0.13);
+  --purple:   #7C3AED;
+  --purple-l: #9D6CF9;
+  --purple-d: #4C1D95;
+  --text:     #F2F0F8;
+  --muted:    rgba(242,240,248,0.45);
+  --muted2:   rgba(242,240,248,0.22);
+  --danger:   #F87171;
+  --r:        10px;
+  --font:     'Aeonik', 'DM Sans', 'Inter', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-weight: 400; min-height: 100vh; overflow-x: hidden; }
+
+/* ORBS */
+.orb { display: none; }
+
+/* WRAPPER */
+.wrap { position: relative; z-index: 1; max-width: 660px; margin: 0 auto; padding: 0 24px 120px; }
+
+/* HEADER */
+.hdr { padding-top: 60px; display: flex; flex-direction: column; align-items: flex-start; }
+.logo { margin-bottom: 52px; }
+.badge { display: inline-flex; align-items: center; gap: 7px; padding: 5px 14px; border: 1px solid rgba(124,58,237,.4); border-radius: 100px; background: rgba(124,58,237,.1); font-size: 0.7rem; color: var(--purple-l); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 20px; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--purple-l); box-shadow: 0 0 8px var(--purple-l); }
+.hdr-title { font-size: clamp(1.8rem, 4.5vw, 2.6rem); font-weight: 500; text-align: left; letter-spacing: -.025em; line-height: 1.15; margin-bottom: 18px; }
+.hdr-title span { background: linear-gradient(130deg, var(--purple-l) 0%, #C4B5FD 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hdr-sub { font-size: 0.88rem; color: var(--muted); text-align: left; line-height: 1.8; max-width: 460px; margin-bottom: 28px; }
+.hdr-meta { font-size: 0.73rem; color: var(--muted2); letter-spacing: .04em; }
+
+/* PROGRESS */
+.prog { margin-top: 48px; margin-bottom: 4px; }
+.prog-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.prog-sec { font-size: 0.72rem; color: var(--muted2); letter-spacing: .07em; text-transform: uppercase; }
+.prog-n { font-size: 0.76rem; color: var(--purple-l); font-weight: 500; }
+.prog-track { height: 1px; background: var(--border); position: relative; }
+.prog-fill { height: 1px; background: linear-gradient(90deg, var(--purple), var(--purple-l)); transition: width .55s cubic-bezier(.4,0,.2,1); position: relative; }
+.prog-fill::after { content: ''; position: absolute; right: -2px; top: -3px; width: 7px; height: 7px; border-radius: 50%; background: var(--purple-l); box-shadow: 0 0 12px var(--purple-l); transition: opacity .3s; }
+
+/* PANELS */
+.panels { margin-top: 40px; }
+.panel { display: none; }
+.panel.on { display: block; animation: up .35s cubic-bezier(.4,0,.2,1) both; }
+@keyframes up { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+/* SECTION TAG */
+.stag { display: inline-flex; align-items: center; gap: 8px; font-size: 0.68rem; color: var(--purple-l); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 30px; opacity: .85; }
+.stag::before { content: ''; width: 18px; height: 1px; background: var(--purple-l); opacity: .6; }
+
+/* QUESTION BLOCK */
+.qb { margin-bottom: 26px; }
+.qb:last-of-type { margin-bottom: 0; }
+.qn { font-size: 0.68rem; color: var(--purple-l); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; display: block; opacity: .75; }
+.ql { font-size: clamp(1rem, 2.4vw, 1.2rem); font-weight: 500; letter-spacing: -.01em; line-height: 1.4; margin-bottom: 6px; }
+.req { color: var(--purple-l); margin-left: 3px; font-size: .62rem; vertical-align: super; font-weight: 400; opacity: .85; }
+.qh { font-size: 0.8rem; color: var(--muted); line-height: 1.65; margin-bottom: 14px; }
+
+/* INPUTS */
+input[type=text], input[type=email], input[type=tel], textarea { width: 100%; background: var(--card); border: 1px solid var(--border); border-radius: var(--r); color: var(--text); font-family: var(--font); font-size: 0.9rem; font-weight: 400; padding: 13px 15px; outline: none; transition: border-color .18s, box-shadow .18s; -webkit-appearance: none; }
+input:focus, textarea:focus { border-color: rgba(124,58,237,.55); box-shadow: 0 0 0 3px rgba(124,58,237,.1); }
+input::placeholder, textarea::placeholder { color: var(--muted2); }
+textarea { resize: vertical; min-height: 108px; line-height: 1.65; }
+.ie { border-color: rgba(248,113,113,.45) !important; }
+.em { font-size: 0.74rem; color: var(--danger); margin-top: 6px; display: none; }
+
+/* DIVIDER */
+.div { height: 1px; background: var(--border); margin: 26px 0; }
+
+/* PILLS */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.pill { padding: 8px 15px; border: 1px solid var(--border); border-radius: 100px; font-size: 0.8rem; cursor: pointer; color: var(--muted); background: var(--card); transition: all .16s ease; user-select: none; font-family: var(--font); }
+.pill:hover { border-color: rgba(124,58,237,.4); color: var(--text); background: rgba(124,58,237,.07); }
+.pill.on { border-color: var(--purple); background: rgba(124,58,237,.18); color: #C4B5FD; }
+.limnote { font-size: 0.7rem; color: var(--muted2); margin-top: 8px; }
+
+/* COMPLEMENT */
+.comp { margin-top: 14px; }
+.comp-lbl { font-size: 0.76rem; color: var(--muted); display: block; margin-bottom: 8px; }
+
+/* CONDITIONAL */
+.cond { display: none; }
+.cond.show { display: block; animation: up .28s ease both; }
+
+/* NAV */
+.nav { display: flex; gap: 11px; margin-top: 38px; }
+.btn-b { padding: 12px 18px; border: 1px solid var(--border); border-radius: var(--r); background: transparent; color: var(--muted); font-family: var(--font); font-size: 0.83rem; cursor: pointer; transition: all .16s; white-space: nowrap; }
+.btn-b:hover { border-color: var(--border-h); color: var(--text); }
+.btn-n { flex: 1; padding: 14px 22px; border: none; border-radius: var(--r); background: var(--purple); color: #fff; font-family: var(--font); font-size: 0.86rem; font-weight: 500; cursor: pointer; letter-spacing: .02em; transition: all .18s; position: relative; overflow: hidden; }
+.btn-n::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent, rgba(255,255,255,.07)); }
+.btn-n:hover { background: #6D28D9; box-shadow: 0 0 30px rgba(124,58,237,.4); transform: translateY(-1px); }
+.btn-n:active { transform: none; }
+
+/* CHECKBOX */
+.ckw { display: flex; align-items: flex-start; gap: 14px; padding: 17px 18px; border: 1px solid var(--border); border-radius: var(--r); background: var(--card); cursor: pointer; transition: border-color .18s; }
+.ckw:hover { border-color: rgba(124,58,237,.3); }
+.ckw input[type=checkbox] { width: 17px; height: 17px; min-width: 17px; appearance: none; border: 1px solid var(--border-h); border-radius: 4px; background: var(--card2); cursor: pointer; margin-top: 2px; position: relative; transition: all .16s; flex-shrink: 0; }
+.ckw input[type=checkbox]:checked { background: var(--purple); border-color: var(--purple); }
+.ckw input[type=checkbox]:checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 10px; color: #fff; font-weight: 700; }
+.ckt { font-size: 0.86rem; line-height: 1.65; color: var(--muted); }
+
+/* THANK YOU */
+.ty { display: none; flex-direction: column; align-items: center; text-align: center; padding: 80px 24px 100px; max-width: 660px; margin: 0 auto; position: relative; z-index: 1; }
+.ty.show { display: flex; }
+.ty-glyph { width: 68px; height: 68px; border: 1px solid rgba(124,58,237,.4); border-radius: 50%; background: rgba(124,58,237,.1); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 40px; box-shadow: 0 0 50px rgba(124,58,237,.3); animation: pulse 3s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 50px rgba(124,58,237,.3); } 50% { box-shadow: 0 0 80px rgba(124,58,237,.5); } }
+.ty-title { font-size: clamp(2rem, 5vw, 3rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 24px; }
+.ty-title span { background: linear-gradient(130deg, var(--purple-l), #C4B5FD); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.ty-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--purple), transparent); margin: 0 auto 24px; }
+.ty-sub { font-size: 0.93rem; color: var(--muted); line-height: 1.8; max-width: 400px; margin-bottom: 12px; }
+.ty-note { font-size: 0.78rem; color: var(--muted2); line-height: 1.7; max-width: 360px; margin-bottom: 48px; }
+.ty-btns { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.ty-p { padding: 13px 26px; background: var(--purple); border: none; border-radius: var(--r); color: #fff; font-family: var(--font); font-size: 0.86rem; font-weight: 500; cursor: pointer; text-decoration: none; transition: all .18s; }
+.ty-p:hover { background: #6D28D9; box-shadow: 0 0 24px rgba(124,58,237,.5); }
+.ty-s { padding: 13px 26px; background: transparent; border: 1px solid var(--border-h); border-radius: var(--r); color: var(--muted); font-family: var(--font); font-size: 0.86rem; cursor: pointer; text-decoration: none; transition: all .18s; }
+.ty-s:hover { color: var(--text); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 26px; right: 26px; background: var(--card2); border: 1px solid rgba(124,58,237,.3); border-radius: 8px; padding: 8px 14px; font-size: 0.73rem; color: var(--purple-l); opacity: 0; transition: opacity .28s; pointer-events: none; z-index: 999; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 580px) {
+  .wrap { padding: 0 16px 100px; }
+  .nav { flex-wrap: wrap; }
+  .btn-b { width: 100%; order: 2; text-align: center; }
+  .btn-n { order: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<div class="wrap" id="formWrap">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div class="logo">
+      <svg width="148" height="14" viewBox="0 0 478 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M57.6219 9.15074C57.6219 10.3912 56.6163 11.3968 55.3758 11.3968H16.3195C15.267 11.3968 14.3829 11.7548 13.6672 12.4705C12.9515 13.1441 12.5936 14.0283 12.5936 15.123V30.0271C12.5936 31.1217 12.9515 32.027 13.6672 32.7428C14.3829 33.4163 15.267 33.7532 16.3195 33.7533H55.9444C57.1848 33.7533 58.1904 34.7589 58.1904 35.9993V42.4326C58.1904 43.6731 57.1848 44.6787 55.9444 44.6787H13.7304C9.77284 44.6787 6.53089 43.4789 4.00477 41.0791C1.61125 38.8052 0.35153 35.9265 0.225859 32.4432C0.212044 32.0603 0.313432 31.6829 0.500147 31.3484L4.78526 23.6697C5.1649 22.9894 5.16491 22.1609 4.78527 21.4806L0.500136 13.8017C0.313428 13.4671 0.212044 13.0898 0.225858 12.7069C0.351528 9.22353 1.61125 6.34484 4.00477 4.07099C6.53089 1.67122 9.77284 0.471369 13.7304 0.471369H55.3758C56.6163 0.471369 57.6219 1.47697 57.6219 2.71743V9.15074Z" fill="white"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M109.459 0.471369C113.838 0.47138 117.416 1.83974 120.195 4.57636C123.016 7.31301 124.426 10.7864 124.426 14.9967V16.1965C124.426 19.4804 123.416 22.3646 121.395 24.8486C120.053 26.4981 118.423 27.8133 116.506 28.7944C115.079 29.5246 114.484 31.403 115.489 32.651L122.238 41.0231C123.422 42.4924 122.376 44.6787 120.489 44.6787H112.262C111.569 44.6787 110.915 44.3589 110.49 43.8121L100.976 31.5883C100.551 31.0415 99.8965 30.7217 99.2036 30.7217H81.202C79.9616 30.7217 78.956 31.7273 78.956 32.9678V42.4326C78.956 43.6731 77.9504 44.6787 76.7099 44.6787H68.8239C67.5834 44.6787 66.5778 43.6731 66.5778 42.4326V2.71743C66.5778 1.47697 67.5834 0.471369 68.8239 0.471369H109.459ZM93.4629 13.7331C93.2196 13.7726 92.9714 13.7717 92.7284 13.7305L81.5773 11.841C80.2064 11.6087 78.956 12.6651 78.956 14.0555V17.9293C78.956 19.1697 79.9616 20.1753 81.202 20.1753H107.943C109.206 20.1753 110.196 19.8384 110.912 19.1648C111.669 18.4491 112.048 17.5017 112.048 16.3228V15.2493C112.048 14.0705 111.669 13.1441 110.912 12.4705C110.19 11.7893 109.24 11.4322 108.061 11.3993C107.941 11.396 107.821 11.4065 107.702 11.4257L93.4629 13.7331Z" fill="white"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M245.161 43.3812C244.75 44.0351 244.032 44.4319 243.26 44.4319H232.832C232.109 44.4319 231.43 44.0837 231.008 43.4964L222.292 31.3649C221.813 30.6973 220.759 31.0366 220.759 31.8586C220.759 35.6057 219.496 38.6792 216.97 41.0791C214.486 43.4789 211.265 44.6787 207.307 44.6787H147.087C143.129 44.6787 139.887 43.4788 137.361 41.0791C134.835 38.6792 133.572 35.6057 133.572 31.8586V13.2915C133.572 9.54438 134.835 6.47082 137.361 4.07099C139.83 1.72588 142.982 0.526645 146.817 0.473236C146.996 0.47075 147.174 0.492676 147.348 0.534837L176.667 7.65656C177.015 7.74118 177.379 7.74118 177.727 7.65656L207.046 0.534837C207.22 0.492676 207.398 0.470749 207.577 0.473237C211.411 0.526659 214.542 1.72585 216.97 4.07099C217.749 4.81086 218.407 5.61496 218.946 6.48288L236.068 30.1827C237.012 31.4883 238.982 31.406 239.813 30.0262L257.108 1.31181C257.514 0.637141 258.244 0.224609 259.032 0.224609H268.223C269.99 0.224609 271.065 2.17019 270.125 3.66596L245.161 43.3812ZM149.676 11.3968C148.623 11.3968 147.739 11.7548 147.024 12.4705C146.308 13.1441 145.95 14.0283 145.95 15.123V30.0271C145.95 31.1217 146.308 32.027 147.024 32.7428C147.739 33.4163 148.623 33.7532 149.676 33.7533H204.592C205.686 33.7533 206.592 33.4164 207.307 32.7428C208.023 32.027 208.381 31.1217 208.381 30.0271V15.123C208.381 14.0283 208.023 13.1441 207.307 12.4705C206.592 11.7547 205.686 11.3968 204.592 11.3968H149.676Z" fill="white"/>
+        <path d="M293.326 42.4326C293.326 43.6731 292.321 44.6787 291.08 44.6787H283.194C281.954 44.6787 280.948 43.6731 280.948 42.4326V2.71743C280.948 1.47697 281.954 0.471369 283.194 0.471369H291.08C292.321 0.471369 293.326 1.47697 293.326 2.71743V42.4326Z" fill="white"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M367.946 41.2373C368.886 42.7331 367.811 44.6787 366.044 44.6787H356.847C356.063 44.6787 355.335 44.2694 354.928 43.5991L351.251 37.5484C350.843 36.878 350.116 36.4687 349.331 36.4687H322.437C321.648 36.4687 320.917 36.8827 320.511 37.5592L316.893 43.5882C316.487 44.2648 315.756 44.6787 314.967 44.6787H305.779C304.012 44.6787 302.937 42.7331 303.877 41.2373L328.841 1.52214C329.252 0.86822 329.97 0.471369 330.743 0.471369H341.08C341.853 0.471369 342.571 0.868224 342.982 1.52215L367.946 41.2373ZM329.027 23.401C328.125 24.8979 329.203 26.8063 330.951 26.8063H340.809C342.556 26.8063 343.634 24.898 342.732 23.401L337.804 15.2212C336.93 13.7721 334.829 13.7721 333.956 15.2212L329.027 23.401Z" fill="white"/>
+        <path d="M419.883 26.6183C421.322 27.9445 423.651 26.9236 423.651 24.9665V2.71743C423.651 1.47697 424.657 0.471369 425.897 0.471369H433.783C435.024 0.471369 436.029 1.47697 436.029 2.71743V42.4326C436.029 43.6731 435.024 44.6787 433.783 44.6787H423.897C423.333 44.6787 422.789 44.4666 422.375 44.0844L394.643 18.5317C393.203 17.2056 390.874 18.2264 390.874 20.1835V42.4326C390.874 43.6731 389.869 44.6787 388.628 44.6787H380.743C379.502 44.6787 378.497 43.6731 378.497 42.4326V2.71743C378.497 1.47697 379.502 0.471369 380.743 0.471369H390.629C391.193 0.471369 391.736 0.683512 392.151 1.06565L419.883 26.6183Z" fill="white"/>
+        <path d="M451.206 22.5453C451.206 20.1327 451.768 17.9489 452.891 15.9939C454.056 13.9973 455.616 12.4375 457.571 11.3144C459.567 10.1913 461.772 9.62976 464.184 9.62976C466.638 9.62976 468.843 10.1913 470.798 11.3144C472.795 12.4375 474.354 13.9765 475.478 15.9315C476.642 17.8865 477.225 20.0703 477.225 22.4829C477.225 24.8954 476.642 27.0792 475.478 29.0342C474.354 30.9476 472.795 32.4659 470.798 33.5889C468.843 34.712 466.638 35.2736 464.184 35.2736C461.772 35.2736 459.567 34.712 457.571 33.5889C455.616 32.4659 454.056 30.9476 452.891 29.0342C451.768 27.0792 451.206 24.9162 451.206 22.5453ZM474.417 22.4829C474.417 20.5279 473.98 18.76 473.107 17.1794C472.233 15.5988 471.006 14.3717 469.425 13.4982C467.886 12.5831 466.139 12.1255 464.184 12.1255C462.271 12.1255 460.524 12.5831 458.943 13.4982C457.404 14.3717 456.198 15.5988 455.324 17.1794C454.451 18.76 454.014 20.5487 454.014 22.5453C454.014 24.5003 454.451 26.2681 455.324 27.8487C456.198 29.3878 457.404 30.5941 458.943 31.4676C460.524 32.3411 462.271 32.7778 464.184 32.7778C466.139 32.7778 467.886 32.3411 469.425 31.4676C471.006 30.5525 472.233 29.3254 473.107 27.7863C473.98 26.2057 474.417 24.4379 474.417 22.4829ZM464.746 15.37C466.41 15.37 467.741 15.7859 468.739 16.6179C469.737 17.4498 470.237 18.5313 470.237 19.8623C470.237 20.9022 469.945 21.7757 469.363 22.4829C468.781 23.19 467.97 23.6891 466.93 23.9803L470.299 29.5958H467.242L464.247 24.5419H462.063V29.5958H459.318V15.37H464.746ZM462.063 22.2333H464.621C465.411 22.2333 466.056 22.0253 466.555 21.6094C467.096 21.1934 467.366 20.6111 467.366 19.8623C467.366 19.1552 467.117 18.6145 466.618 18.2401C466.119 17.8657 465.453 17.6786 464.621 17.6786H462.063V22.2333Z" fill="white"/>
+      </svg>
+    </div>
+    <div class="badge">Briefing Estratégico</div>
+    <h1 class="hdr-title">Criação de<br><span>Brand Name</span></h1>
+    <p class="hdr-sub">Preencha com máxima clareza. Quanto mais precisas forem suas respostas, mais estratégico e memorável será o nome da sua marca.</p>
+    <p class="hdr-meta">⏱ &nbsp;7 a 10 minutos de preenchimento</p>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="prog" id="progWrap">
+    <div class="prog-top">
+      <span class="prog-sec" id="secLabel">Etapa 1 · Informações Iniciais</span>
+      <span class="prog-n" id="progN">1 / 21</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" id="progFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- PANELS -->
+  <div class="panels" id="panels">
+
+    <div class="panel on" id="p0" data-sec="Etapa 1 · Informações Iniciais">
+      <div class="stag">Informações Iniciais</div>
+      <div class="qb"><span class="qn">01</span><div class="ql">Qual é o seu nome?<span class="req">*</span></div><input type="text" id="q1" placeholder="Seu nome completo" data-r><div class="em" id="e1">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">02</span><div class="ql">Nome atual da empresa ou projeto</div><p class="qh">Se ainda não tiver um nome, pode deixar em branco.</p><input type="text" id="q2" placeholder="Ex.: Studio Bloom..."></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">03</span><div class="ql">E-mail para contato<span class="req">*</span></div><input type="email" id="q3" placeholder="seu@email.com" data-r data-em><div class="em" id="e3">Insira um e-mail válido.</div></div>
+      <div class="nav"><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p1" data-sec="Etapa 1 · Informações Iniciais">
+      <div class="stag">Informações Iniciais</div>
+      <div class="qb"><span class="qn">04</span><div class="ql">WhatsApp / Telefone<span class="req">*</span></div><input type="tel" id="q4" placeholder="+55 (11) 99999-9999" data-r><div class="em" id="e4">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">05</span><div class="ql">Instagram, site ou rede principal</div><input type="text" id="q5" placeholder="@handle ou https://..."></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p2" data-sec="Etapa 2 · Contexto da Marca">
+      <div class="stag">Contexto da Marca</div>
+      <div class="qb"><span class="qn">06</span><div class="ql">O que sua marca vende, entrega ou representa?<span class="req">*</span></div><textarea id="q6" placeholder="Descreva com clareza o produto, serviço ou proposta da sua marca..." data-r></textarea><div class="em" id="e6">Campo obrigatório.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p3" data-sec="Etapa 2 · Contexto da Marca">
+      <div class="stag">Contexto da Marca</div>
+      <div class="qb"><span class="qn">07</span><div class="ql">Qual é o principal objetivo da marca hoje?<span class="req">*</span></div><p class="qh">Ex.: vender mais, se posicionar melhor, lançar um produto, crescer no digital.</p><textarea id="q7" placeholder="Descreva o objetivo central..." data-r></textarea><div class="em" id="e7">Campo obrigatório.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p4" data-sec="Etapa 2 · Contexto da Marca">
+      <div class="stag">Contexto da Marca</div>
+      <div class="qb"><span class="qn">08</span><div class="ql">Em qual nicho ou mercado sua marca atua?<span class="req">*</span></div><input type="text" id="q8" placeholder="Ex.: saúde, finanças, moda, tecnologia..." data-r><div class="em" id="e8">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">09</span><div class="ql">Em uma frase, por que essa marca existe?<span class="req">*</span></div><p class="qh">Complete: "Nossa marca existe para..."</p><textarea id="q9" placeholder="Nossa marca existe para..." data-r style="min-height:90px"></textarea><div class="em" id="e9">Campo obrigatório.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p5" data-sec="Etapa 2 · Contexto da Marca">
+      <div class="stag">Contexto da Marca</div>
+      <div class="qb"><span class="qn">10</span><div class="ql">Qual problema a sua marca resolve?<span class="req">*</span></div><textarea id="q10" placeholder="Descreva o problema real que você soluciona..." data-r></textarea><div class="em" id="e10">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">11</span><div class="ql">Qual transformação a marca entrega?<span class="req">*</span></div><textarea id="q11" placeholder="O cliente começa em X e termina em Y..." data-r></textarea><div class="em" id="e11">Campo obrigatório.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p6" data-sec="Etapa 3 · Posicionamento">
+      <div class="stag">Posicionamento</div>
+      <div class="qb"><span class="qn">12</span><div class="ql">Como você quer que sua marca seja percebida?<span class="req">*</span></div><p class="qh">Selecione todas que se aplicam.</p><div class="pills" id="pq12" data-m></div><div class="em" id="e12">Selecione ao menos uma opção.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p7" data-sec="Etapa 3 · Posicionamento">
+      <div class="stag">Posicionamento</div>
+      <div class="qb"><span class="qn">13</span><div class="ql">Que espaço sua marca deve ocupar na mente do cliente?<span class="req">*</span></div><textarea id="q13" placeholder="Ex.: 'A referência em consultoria para mulheres empreendedoras'..." data-r></textarea><div class="em" id="e13">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">14 — 16</span><div class="ql">Concorrentes: quem são, o que fazem bem e onde falham</div><p class="qh">Pode citar marcas, perfis ou referências diretas.</p><textarea id="q14" placeholder="Principais concorrentes..." style="min-height:75px"></textarea><div style="height:8px"></div><textarea id="q15" placeholder="O que fazem bem..." style="min-height:75px"></textarea><div style="height:8px"></div><textarea id="q16" placeholder="Onde deixam espaço..." style="min-height:75px"></textarea></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p8" data-sec="Etapa 3 · Posicionamento">
+      <div class="stag">Posicionamento</div>
+      <div class="qb"><span class="qn">17</span><div class="ql">O que torna sua marca diferente?<span class="req">*</span></div><textarea id="q17" placeholder="O que só você entrega ou faz de um jeito único..." data-r></textarea><div class="em" id="e17">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">18</span><div class="ql">"Somos a única marca que ______."</div><textarea id="q18" placeholder="Complete com o diferencial exclusivo..." style="min-height:80px"></textarea></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p9" data-sec="Etapa 4 · Público-Alvo">
+      <div class="stag">Público-Alvo</div>
+      <div class="qb"><span class="qn">19</span><div class="ql">Quem é o público ideal da marca?<span class="req">*</span></div><p class="qh">Perfil, faixa etária, profissão, estilo de vida, momento financeiro ou comportamental.</p><textarea id="q19" placeholder="Meu cliente ideal é..." data-r></textarea><div class="em" id="e19">Campo obrigatório.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p10" data-sec="Etapa 4 · Público-Alvo">
+      <div class="stag">Público-Alvo</div>
+      <div class="qb"><span class="qn">20</span><div class="ql">Esse público busca mais:<span class="req">*</span></div><div class="pills" id="pq20" data-m></div><div class="em" id="e20">Selecione ao menos uma opção.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">21</span><div class="ql">Qual é a maior dor desse público?<span class="req">*</span></div><textarea id="q21" placeholder="A principal frustração que eles carregam..." data-r style="min-height:85px"></textarea><div class="em" id="e21">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">22</span><div class="ql">Qual é o desejo mais forte desse público?<span class="req">*</span></div><textarea id="q22" placeholder="O que eles mais sonham em conquistar..." data-r style="min-height:85px"></textarea><div class="em" id="e22">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">23</span><div class="ql">Esse público é mais:<span class="req">*</span></div><div class="pills" id="pq23" data-radio></div><div class="em" id="e23">Selecione uma opção.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p11" data-sec="Etapa 5 · Personalidade">
+      <div class="stag">Personalidade da Marca</div>
+      <div class="qb"><span class="qn">24</span><div class="ql">Se sua marca fosse uma pessoa, como ela seria?<span class="req">*</span></div><p class="qh">Personalidade, postura, jeito de ser e de se expressar.</p><textarea id="q24" placeholder="Uma pessoa que..." data-r></textarea><div class="em" id="e24">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">25</span><div class="ql">Como essa marca fala?<span class="req">*</span></div><div class="pills" id="pq25" data-m></div><div class="em" id="e25">Selecione ao menos uma opção.</div><div class="comp"><label class="comp-lbl">Se quiser, descreva melhor o tom de voz:</label><textarea id="q25b" placeholder="Detalhes sobre a comunicação..." style="min-height:65px"></textarea></div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p12" data-sec="Etapa 5 · Personalidade">
+      <div class="stag">Personalidade da Marca</div>
+      <div class="qb"><span class="qn">26</span><div class="ql">Quais adjetivos combinam com sua marca?<span class="req">*</span></div><p class="qh">Ex.: forte, confiável, ousada, inteligente, refinada.</p><input type="text" id="q26" placeholder="Liste os adjetivos..." data-r><div class="em" id="e26">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">27</span><div class="ql">Escolha até 3 arquétipos que mais se aproximam:</div><p class="qh">Máximo de 3 seleções.</p><div class="pills" id="pq27" data-m data-lim="3"></div><div class="limnote" id="n27">0 / 3 selecionados</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">28 — 29</span><div class="ql">Marcas que admira — e que não quer parecer:</div><textarea id="q28" placeholder="Marcas cuja vibe você admira..." style="min-height:75px"></textarea><div style="height:8px"></div><textarea id="q29" placeholder="Marcas que você NÃO quer parecer..." style="min-height:75px"></textarea></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p13" data-sec="Etapa 6 · Direção do Nome">
+      <div class="stag">Direção do Nome</div>
+      <div class="qb"><span class="qn">30</span><div class="ql">Que sensação o nome precisa transmitir?<span class="req">*</span></div><p class="qh">Selecione todas que ressoam com sua visão.</p><div class="pills" id="pq30" data-m></div><div class="em" id="e30">Selecione ao menos uma opção.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p14" data-sec="Etapa 6 · Direção do Nome">
+      <div class="stag">Direção do Nome</div>
+      <div class="qb"><span class="qn">31</span><div class="ql">Se o nome fosse uma emoção, qual seria?</div><input type="text" id="q31" placeholder="Ex.: confiança, entusiasmo, serenidade..."></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">32</span><div class="ql">Se o nome fosse um carro, qual seria?</div><p class="qh">Revela percepção de energia, status e personalidade.</p><input type="text" id="q32" placeholder="Ex.: Ferrari, Tesla, Jeep, Mercedes..."></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">33</span><div class="ql">Você prefere um nome:<span class="req">*</span></div><div class="pills" id="pq33" data-radio></div><div class="em" id="e33">Selecione uma opção.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p15" data-sec="Etapa 6 · Direção do Nome">
+      <div class="stag">Direção do Nome</div>
+      <div class="qb"><span class="qn">34</span><div class="ql">Qual estilo de nome você prefere?<span class="req">*</span></div><div class="pills" id="pq34" data-m></div><div class="em" id="e34">Selecione ao menos uma opção.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">35</span><div class="ql">O nome deve ser:<span class="req">*</span></div><div class="pills" id="pq35" data-radio></div><div class="em" id="e35">Selecione uma opção.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">36 — 37</span><div class="ql">Palavras que influenciam — e o que evitar:</div><p class="qh">Ex.: movimento, poder, fluxo, inteligência, elite, liberdade, escala.</p><textarea id="q36" placeholder="Palavras e ideias que inspiram..." style="min-height:75px"></textarea><div style="height:8px"></div><textarea id="q37" placeholder="Conceitos e associações a evitar..." style="min-height:75px"></textarea></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p16" data-sec="Etapa 7 · Referências">
+      <div class="stag">Referências e Restrições</div>
+      <div class="qb"><span class="qn">38 — 39</span><div class="ql">Nomes que você gosta — e que não gosta:</div><textarea id="q38" placeholder="Nomes que você gosta e por quê..." style="min-height:75px"></textarea><div style="height:8px"></div><textarea id="q39" placeholder="Nomes que você não gosta e por quê..." style="min-height:75px"></textarea></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">40</span><div class="ql">O nome precisa funcionar fora do Brasil?<span class="req">*</span></div><div class="pills" id="pq40" data-radio></div><div class="em" id="e40">Selecione uma opção.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">41</span><div class="ql">Precisa ser fácil de pronunciar em outros idiomas?<span class="req">*</span></div><div class="pills" id="pq41" data-radio></div><div class="em" id="e41">Selecione uma opção.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p17" data-sec="Etapa 7 · Referências">
+      <div class="stag">Referências e Restrições</div>
+      <div class="qb"><span class="qn">42</span><div class="ql">Disponibilidade de domínio é importante?<span class="req">*</span></div><div class="pills" id="pq42" data-radio data-cv="Sim, muito importante|Sim, mas não decisivo" data-ct="cq43"></div><div class="em" id="e42">Selecione uma opção.</div><div class="cond" id="cq43"><div class="div"></div><span class="qn">43</span><div class="ql" style="font-size:.95rem;margin-bottom:10px">Qual domínio seria mais importante?</div><div class="pills" id="pq43" data-radio></div></div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">44</span><div class="ql">O nome será usado principalmente em:<span class="req">*</span></div><div class="pills" id="pq44" data-m></div><div class="em" id="e44">Selecione ao menos uma opção.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">45</span><div class="ql">Há alguma restrição legal, cultural ou estratégica?</div><textarea id="q45" placeholder="Ex.: não pode soar como o concorrente X, restrição de categoria..." style="min-height:75px"></textarea></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p18" data-sec="Etapa 8 · Visão de Futuro">
+      <div class="stag">Visão de Futuro</div>
+      <div class="qb"><span class="qn">46</span><div class="ql">Onde você quer que essa marca esteja em 3 a 5 anos?<span class="req">*</span></div><textarea id="q46" placeholder="Descreva sua visão de futuro..." data-r></textarea><div class="em" id="e46">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">47</span><div class="ql">A marca pode expandir para outros produtos ou mercados?<span class="req">*</span></div><div class="pills" id="pq47" data-radio></div><div class="em" id="e47">Selecione uma opção.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">48</span><div class="ql">O nome precisa permitir expansão futura?<span class="req">*</span></div><div class="pills" id="pq48" data-radio></div><div class="em" id="e48">Selecione uma opção.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">49</span><div class="ql">Se essa marca virasse algo enorme, o nome ainda faria sentido?</div><textarea id="q49" placeholder="Reflita sobre a escalabilidade do nome..." style="min-height:75px"></textarea></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p19" data-sec="Etapa 9 · Percepção Final">
+      <div class="stag">Percepção Final</div>
+      <div class="qb"><span class="qn">50</span><div class="ql">Quando alguém ouvir o nome ideal pela primeira vez, o que você quer que ela pense?<span class="req">*</span></div><textarea id="q50" placeholder="A primeira impressão que você deseja provocar..." data-r></textarea><div class="em" id="e50">Campo obrigatório.</div></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">51 — 52</span><div class="ql">O que um nome ruim jamais pode parecer — e se há alguma história por trás:</div><textarea id="q51" placeholder="O que um nome ruim jamais pode transmitir..." style="min-height:75px"></textarea><div style="height:8px"></div><textarea id="q52" placeholder="Histórias ou contextos que podem ajudar na criação..." style="min-height:75px"></textarea></div>
+      <div class="div"></div>
+      <div class="qb"><span class="qn">53</span><div class="ql">Quer adicionar mais alguma informação?</div><textarea id="q53" placeholder="Espaço livre para o que não coube..." style="min-height:75px"></textarea></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" onclick="go(1)">Continuar →</button></div>
+    </div>
+
+    <div class="panel" id="p20" data-sec="Etapa 10 · Finalização">
+      <div class="stag">Finalização</div>
+      <div class="qb"><div class="ql" style="font-size:1.35rem;letter-spacing:-.02em;margin-bottom:8px">Quase lá.</div><p class="qh" style="margin-bottom:24px">Antes de enviar, confirme a declaração abaixo:</p><label class="ckw"><input type="checkbox" id="q54"><span class="ckt">Confirmo que as informações fornecidas representam com clareza o momento e a visão da minha marca.</span></label><div class="em" id="e54">Você precisa confirmar antes de enviar.</div></div>
+      <div class="nav"><button class="btn-b" onclick="go(-1)">← Voltar</button><button class="btn-n" id="submitBtn" onclick="sub()">Enviar briefing →</button></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- THANK YOU -->
+<div class="ty" id="ty">
+  <div class="ty-glyph">✦</div>
+  <h2 class="ty-title">Briefing enviado<br>com <span>sucesso.</span></h2>
+  <div class="ty-line"></div>
+  <p class="ty-sub">Perfeito. Agora temos uma base estratégica muito mais sólida para desenvolver um nome de marca forte, coerente e memorável.</p>
+  <p class="ty-note">Se necessário, entraremos em contato para aprofundar algum ponto antes da etapa criativa.</p>
+  <div class="ty-btns">
+    <a href="https://wa.me/5500000000000" class="ty-p" target="_blank">Falar no WhatsApp</a>
+    <a href="javascript:location.reload()" class="ty-s">Novo briefing</a>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Progresso salvo</div>
+
+<script>
+const PD = {
+  q12:  { items:['Premium','Acessível','Sofisticada','Moderna','Tecnológica','Humana','Autoridade','Disruptiva','Exclusiva','Tradicional','Jovem','Inovadora'], m:true },
+  q20:  { items:['Status','Liberdade','Segurança','Praticidade','Crescimento','Resultado financeiro','Reconhecimento','Exclusividade','Inovação','Simplicidade'], m:true },
+  q23:  { items:['Emocional','Racional','Um misto dos dois'], r:true },
+  q25:  { items:['Direta','Sofisticada','Técnica','Leve','Provocativa','Inspiradora','Elegante','Jovem','Corporativa','Humana'], m:true },
+  q27:  { items:['Herói','Rebelde','Sábio','Governante','Criador','Explorador','Mago','Cuidador','Inocente','Amante','Bobo da corte','Homem comum'], m:true, lim:3 },
+  q30:  { items:['Confiança','Poder','Sofisticação','Exclusividade','Segurança','Tecnologia','Inovação','Velocidade','Liberdade','Criatividade','Autoridade','Simplicidade'], m:true },
+  q33:  { items:['Curto','Médio','Longo','Sem preferência'], r:true },
+  q34:  { items:['Palavra real','Nome inventado','Nome híbrido','Descritivo','Conceitual','Abstrato','Em inglês','Em português','Global / neutro'], m:true },
+  q35:  { items:['Mais racional','Mais emocional','Um equilíbrio'], r:true },
+  q40:  { items:['Sim','Não','Talvez no futuro'], r:true },
+  q41:  { items:['Sim','Não','Desejável, não obrigatório'], r:true },
+  q42:  { items:['Sim, muito importante','Sim, mas não decisivo','Não é prioridade'], r:true },
+  q43:  { items:['.com','.com.br','Ambos','Ainda não sei'], r:true },
+  q44:  { items:['Instagram','Site','Aplicativo','Apresentações comerciais','Embalagens / produtos','Materiais impressos','Outro'], m:true },
+  q47:  { items:['Sim','Não','Talvez'], r:true },
+  q48:  { items:['Sim, escalável','Não, pode ser nichado','Ainda estou definindo'], r:true },
+};
+
+const S = {}; // selections
+let cur = 0;
+const TOT = 21;
+
+document.addEventListener('DOMContentLoaded', () => {
+  build(); load(); upd(); listenInputs();
+});
+
+function build() {
+  Object.keys(PD).forEach(k => {
+    const cfg = PD[k];
+    const el = document.getElementById('p' + k);
+    if (!el) return;
+    S[k] = cfg.r ? '' : [];
+    cfg.items.forEach(v => {
+      const p = document.createElement('div');
+      p.className = 'pill';
+      p.textContent = v;
+      p.dataset.v = v;
+      p.onclick = () => toggle(k, v, p, cfg, el);
+      el.appendChild(p);
+    });
+  });
+}
+
+function toggle(k, v, el, cfg, container) {
+  if (cfg.r) {
+    container.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
+    el.classList.add('on');
+    S[k] = v;
+    const cv = container.dataset.cv;
+    const ct = container.dataset.ct;
+    if (ct) {
+      const c = document.getElementById(ct);
+      if (c) c.classList.toggle('show', !!cv && cv.split('|').includes(v));
+    }
+  } else {
+    if (!Array.isArray(S[k])) S[k] = [];
+    const lim = parseInt(cfg.lim || 99);
+    if (el.classList.contains('on')) {
+      el.classList.remove('on');
+      S[k] = S[k].filter(x => x !== v);
+    } else {
+      if (S[k].length >= lim) return;
+      el.classList.add('on');
+      S[k].push(v);
+    }
+    const note = document.getElementById('n' + k.slice(1));
+    if (note && cfg.lim) note.textContent = `${S[k].length} / ${cfg.lim} selecionados`;
+  }
+  save();
+}
+
+function go(d) {
+  if (d > 0 && !valid()) return;
+  cur = Math.max(0, Math.min(TOT - 1, cur + d));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.getElementById('p' + cur).classList.add('on');
+  upd(); save();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function valid() {
+  clearE();
+  let ok = true;
+  const panel = document.getElementById('p' + cur);
+  // text inputs
+  panel.querySelectorAll('[data-r]').forEach(f => {
+    const v = f.value.trim();
+    if (!v || (f.dataset.em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))) {
+      f.classList.add('ie');
+      const em = document.getElementById('e' + f.id.slice(1));
+      if (em) em.style.display = 'block';
+      ok = false;
+    }
+  });
+  // multi pills required per panel
+  const mReq = { 6:'q12', 10:'q20', 11:'q25', 13:'q30', 15:'q34', 17:'q44' };
+  if (mReq[cur]) {
+    const k = mReq[cur];
+    if (!S[k] || S[k].length === 0) { showE('e' + k.slice(1)); ok = false; }
+  }
+  // radio required
+  const rReq = { 10:['q23'], 14:['q33'], 15:['q35'], 16:['q40','q41'], 17:['q42'], 18:['q47','q48'] };
+  if (rReq[cur]) rReq[cur].forEach(k => { if (!S[k]) { showE('e' + k.slice(1)); ok = false; } });
+  return ok;
+}
+
+function showE(id) { const e = document.getElementById(id); if (e) e.style.display = 'block'; }
+function clearE() {
+  document.querySelectorAll('.ie').forEach(e => e.classList.remove('ie'));
+  document.querySelectorAll('.em').forEach(e => e.style.display = 'none');
+}
+
+// ─── COLE AQUI A URL DO SEU APPS SCRIPT ───
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzzXDmfeO7zzcKC-2VOZYQEaNp5YwelnDOaoyT2Xg82H7Wd-1dWL9DxKxc0lbVt7jCzNw/exec';
+
+async function sub() {
+  if (!valid()) return;
+  const cb = document.getElementById('q54');
+  if (!cb.checked) { showE('e54'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  if (btn) { btn.textContent = 'Enviando...'; btn.disabled = true; }
+
+  // Coleta todos os campos
+  const payload = {};
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],textarea').forEach(f => {
+    if (f.id) payload[f.id] = f.value;
+  });
+  // Adiciona seleções de pills
+  Object.keys(S).forEach(k => { payload[k] = S[k]; });
+
+  try {
+    if (SHEET_URL && SHEET_URL !== 'COLE_SUA_URL_AQUI') {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
+  } catch(e) { console.warn('Erro ao enviar:', e); }
+
+  localStorage.removeItem('cbrf');
+  document.getElementById('formWrap').style.display = 'none';
+  document.getElementById('ty').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function upd() {
+  const pct = Math.round((cur / (TOT - 1)) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progN').textContent = (cur + 1) + ' / ' + TOT;
+  const sec = document.getElementById('p' + cur).dataset.sec || '';
+  document.getElementById('secLabel').textContent = sec;
+}
+
+let st;
+function save() {
+  clearTimeout(st);
+  st = setTimeout(() => {
+    const flds = {};
+    document.querySelectorAll('input[type=text],input[type=email],input[type=tel],textarea').forEach(f => { if (f.id) flds[f.id] = f.value; });
+    try {
+      localStorage.setItem('cbrf', JSON.stringify({ cur, flds, S }));
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1800);
+    } catch(e) {}
+  }, 900);
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem('cbrf');
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.flds) Object.keys(data.flds).forEach(id => { const el = document.getElementById(id); if (el) el.value = data.flds[id]; });
+    if (data.S) {
+      Object.keys(data.S).forEach(k => {
+        S[k] = data.S[k];
+        const vals = Array.isArray(S[k]) ? S[k] : (S[k] ? [S[k]] : []);
+        const cont = document.getElementById('p' + k);
+        if (!cont) return;
+        vals.forEach(v => cont.querySelectorAll('.pill').forEach(p => { if (p.dataset.v === v) p.classList.add('on'); }));
+        // cond restore
+        const cv = cont.dataset.cv, ct = cont.dataset.ct;
+        if (ct && cv && typeof S[k] === 'string') {
+          const c = document.getElementById(ct);
+          if (c && cv.split('|').includes(S[k])) c.classList.add('show');
+        }
+        // limit note
+        const note = document.getElementById('n' + k.slice(1));
+        const cfg = PD[k];
+        if (note && cfg && cfg.lim) note.textContent = `${vals.length} / ${cfg.lim} selecionados`;
+      });
+    }
+    if (data.cur) { cur = data.cur; document.querySelectorAll('.panel').forEach(p => p.classList.remove('on')); document.getElementById('p' + cur).classList.add('on'); }
+  } catch(e) {}
+}
+
+function listenInputs() {
+  document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', save));
+}
+</script>
+</body>
+</html>
